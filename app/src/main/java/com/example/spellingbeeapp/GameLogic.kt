@@ -1,4 +1,4 @@
-package com.example.spellingbeeapp.ui.theme
+package com.example.spellingbeeapp
 
 import androidx.compose.runtime.Composable
 import java.lang.Integer.min
