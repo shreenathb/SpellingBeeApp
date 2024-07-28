@@ -24,6 +24,8 @@ fun TextToSpeechScreen(ttsHelper: TTS, isTtsInitialized: Boolean, viewModel: Spe
     val count by viewModel.count
     val isGameOver by viewModel.isGameOver
     val word by viewModel.word
+    val wordDefinition by  viewModel.wordDefinition
+    val errorMessage by  viewModel.errorMessage
 
     var text by remember { mutableStateOf(TextFieldValue("")) }
 
@@ -80,6 +82,31 @@ fun TextToSpeechScreen(ttsHelper: TTS, isTtsInitialized: Boolean, viewModel: Spe
                 }
             ) {
                 Text("Submit")
+            }
+        }
+
+        Button(onClick = {
+            viewModel.fetchWordDefinition(currentWord.text)
+        }) {
+            Text("Define")
+        }
+
+        when {
+            wordDefinition != null -> {
+                wordDefinition!!.forEach { dictionaryResponse ->
+                    dictionaryResponse.meanings.forEach { meaning ->
+                        Text("Part of Speech: ${meaning.partOfSpeech}")
+                        meaning.definitions.forEach { definition ->
+                            Text("Definition: ${definition.definition}")
+                            definition.example?.let {
+                                Text("Example: $it")
+                            }
+                        }
+                    }
+                }
+            }
+            errorMessage != null -> {
+                Text("Error: $errorMessage")
             }
         }
 

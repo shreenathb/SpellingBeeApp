@@ -1,10 +1,16 @@
 // SpellingBeeViewModel.kt
 package com.example.spellingbeeapp.viewmodel
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.spellingbeeapp.DictionaryResponse
 import com.example.spellingbeeapp.GameManager
+import com.example.spellingbeeapp.RetrofitInstance
 import com.example.spellingbeeapp.Word
+import kotlinx.coroutines.launch
 
 
 class SpellingBeeViewModel : ViewModel() {
@@ -27,6 +33,26 @@ class SpellingBeeViewModel : ViewModel() {
         private set
     var startRound = mutableStateOf(true)
         private set
+
+    private val dictionaryApi = RetrofitInstance.api
+
+    var wordDefinition = mutableStateOf<List<DictionaryResponse>?>(null)
+        private set
+
+    var errorMessage = mutableStateOf<String?>(null)
+        private set
+
+    fun fetchWordDefinition(word: String) {
+        viewModelScope.launch {
+            try {
+                wordDefinition.value = dictionaryApi.getWordDefinition(word)
+                errorMessage.value = null
+            } catch (e: Exception) {
+                errorMessage.value = "Failed to fetch definition: ${e.message}"
+                wordDefinition.value = null
+            }
+        }
+    }
 
 
     fun startNewRound() {
